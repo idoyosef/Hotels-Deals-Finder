@@ -46,7 +46,7 @@ def main():
     else:
         print("Starting Hotel Deal Finder GUI...")
         root = tk.Tk()
-        app = gui.HotelDealFinderApp(root)
+        app = gui.HotelsDealsFinderApp(root)
         root.mainloop()
 
 

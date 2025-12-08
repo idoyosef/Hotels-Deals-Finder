@@ -7,10 +7,10 @@ from datetime import date, timedelta
 from core import hotels, utils, preferences
 
 
-class HotelDealFinderApp:
+class HotelsDealsFinderApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Hotel Deal Finder")
+        self.root.title("Hotels Deals Finder")
         self.city_var = tk.StringVar()
         self.hotel_var = tk.StringVar()
         self.currency_var = tk.StringVar(value="ILS")
@@ -45,7 +45,7 @@ class HotelDealFinderApp:
 
     def create_widgets(self):
         # --- Header ---
-        header = tk.Label(self.root, text="🏨 Hotel Deal Finder",
+        header = tk.Label(self.root, text="🏨 Hotels Deals Finder",
                           font=("Segoe UI Semibold", 16), bg="#F3F4F6", fg="#2563EB")
         header.pack(pady=(15, 10))
 
