@@ -6,7 +6,7 @@ The project integrates external APIs, secret management with environment variabl
 
 ## 🎮 Demo
 
-<img src="https://github.com/idoyosef/Hotels-Deals-Finder/blob/main/screenshot.png" alt="Hotels Deals Finder GUI Screenshot" height="400" width="400"/>
+<img src="https://github.com/idoyosef/Hotels-Deals-Finder/blob/main/screenshot.png" alt="Hotels Deals Finder GUI Screenshot" height="600" width="450"/>
 
 ## 🚀 Features
 
