@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, scrolledtext, messagebox
 from tkcalendar import DateEntry
 from datetime import date, timedelta
+import threading
 
 # Import the core modules
 from core import hotels, utils, preferences
@@ -97,8 +98,8 @@ class HotelsDealsFinderApp:
         btn_frame = ttk.Frame(self.root, padding=8)
         btn_frame.pack(fill="x", padx=20, pady=5)
 
-        search_btn = ttk.Button(btn_frame, text="🔍 Search Hotels", command=self.search_hotels)
-        search_btn.pack(side="left", padx=(0, 10))
+        self.search_btn = ttk.Button(btn_frame, text="🔍 Search Hotels", command=self.search_hotels)
+        self.search_btn.pack(side="left", padx=(0, 10))
 
         self.notification_button = ttk.Button(btn_frame, text="🔔 Get Notification", state="disabled")
         self.notification_button.pack(side="left")
@@ -127,7 +128,7 @@ class HotelsDealsFinderApp:
             "chk_in": self.checkin_picker.get_date().strftime("%Y-%m-%d"),
             "chk_out": self.checkout_picker.get_date().strftime("%Y-%m-%d"),
         }
-        # Basic validation (moved from utils to here, as this is GUI validation)
+
         if not user_choice["city"].isalpha():
             messagebox.showwarning("Input Error", "Please enter a valid city name (letters only).")
             return None
@@ -144,27 +145,51 @@ class HotelsDealsFinderApp:
         return user_choice
 
     def search_hotels(self):
+        # Clear previous results immediately
         self.results_box.delete('1.0', tk.END)
+        self.search_btn.config(state="disabled")
         self.notification_button.config(state="disabled")
+
 
         user_choice = self.get_user_preferences()
         if not user_choice:
             return
 
-        try:
-            # CALLS THE CORE SERVICE
-            results = self.hotel_service.get_hotels(user_choice, target_price=0)
-            self.results_box.insert(tk.END, results)
+        self.results_box.insert(tk.END, "Searching for hotels... please wait...\n")
 
-            if results:
-                self.notification_button.config(state="active", command=lambda: self.get_notification(user_choice))
-            else:
-                messagebox.showinfo("Search Results",
-                                    f"No hotels found in {user_choice['city']} for your chosen dates.")
 
-        except Exception as e:
-            messagebox.showerror("Search Error", f"An error occurred during search: {e}")
-            print(f"Error: {e}")
+        def run_search_logic():
+            try:
+                results = self.hotel_service.get_hotels(user_choice, target_price=0)
+                self.root.after(0, lambda: self.update_ui_with_results(results, user_choice))
+
+            except Exception as e:
+                self.root.after(0, lambda: self.handle_search_error(e))
+
+
+        search_thread = threading.Thread(target=run_search_logic)
+        search_thread.daemon = True  # Kills thread if you close the app
+        search_thread.start()
+
+    def handle_search_error(self, error):
+        """Called by the thread if something crashes."""
+        self.search_btn.config(state="normal")
+
+        self.results_box.delete('1.0', tk.END)
+        messagebox.showerror("Search Error", f"An error occurred: {error}")
+
+    def update_ui_with_results(self, results, user_choice):
+        self.results_box.delete('1.0', tk.END)
+        self.search_btn.config(state="normal")
+        self.results_box.insert(tk.END, results)
+
+        if results:
+            self.notification_button.config(state="active",
+                                            command=lambda: self.get_notification(user_choice))
+        else:
+            messagebox.showinfo("Search Results",
+                                f"No hotels found in {user_choice['city']} for your chosen dates.")
+
 
     def get_notification(self, user_preferences):
         """Displays a popup window for the user to enter notification details."""
