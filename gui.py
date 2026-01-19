@@ -153,6 +153,7 @@ class HotelsDealsFinderApp:
 
         user_choice = self.get_user_preferences()
         if not user_choice:
+            self.search_btn.config(state="normal")
             return
 
         self.results_box.insert(tk.END, "Searching for hotels... please wait...\n")
