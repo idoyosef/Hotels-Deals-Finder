@@ -129,7 +129,7 @@ class HotelsDealsFinderApp:
             "chk_out": self.checkout_picker.get_date().strftime("%Y-%m-%d"),
         }
 
-        if not user_choice["city"].isalpha():
+        if not user_choice["city"].replace(" ", "").isalpha():
             messagebox.showwarning("Input Error", "Please enter a valid city name (letters only).")
             return None
         if user_choice["wanted_hotel"] and not user_choice["wanted_hotel"].replace(" ", "").isalnum():
