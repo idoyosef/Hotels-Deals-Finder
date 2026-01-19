@@ -166,7 +166,7 @@ class HotelsDealsFinderApp:
             except Exception as e:
                 self.root.after(0, lambda: self.handle_search_error(e))
 
-
+        # Run search on separate thread to prevent GUI from freezing
         search_thread = threading.Thread(target=run_search_logic)
         search_thread.daemon = True  # Kills thread if you close the app
         search_thread.start()
